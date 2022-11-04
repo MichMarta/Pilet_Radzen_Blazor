@@ -1,0 +1,50 @@
+@page "/example"
+
+@using System.Text.Json
+
+<RadzenTemplateForm TItem="Model" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+    <RadzenFieldset Text="Bid info">
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <RadzenLabel Text="Quantity" />
+                <small style="display: block">(1-10 items)</small>
+            </div>
+            <div class="col">
+                <RadzenNumeric style="display: block" Name="Quantity" @bind-Value=@model.Quantity @oninput=@OnInput Class="w-100" />
+                <RadzenNumericRangeValidator Component="Quantity" Min="1" Max="10" Text="Quantity should be between 1 and 10" Popup=@popup Style="position: absolute" />
+            </div>
+        </div>
+        <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+    </RadzenFieldset>
+</RadzenTemplateForm>
+@code {
+    class Model
+    {
+        public decimal Quantity { get; set; }
+    }
+
+    bool popup = true;
+
+    Model model = new Model();
+    
+
+    void OnInput(ChangeEventArgs args)
+    {
+        Log("oninput", args.Value.ToString());
+    }
+
+    void Log(string eventName, string value)
+    {
+        Console.WriteLine($"{eventName}: {value}");
+    }
+
+    void OnSubmit(Model model)
+    {
+        Log("Submit", JsonSerializer.Serialize(model, new JsonSerializerOptions() { WriteIndented = true }));
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        Log("InvalidSubmit", JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true }));
+    }
+}
